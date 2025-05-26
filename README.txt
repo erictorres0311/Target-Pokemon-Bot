@@ -1,0 +1,1 @@
+Run main.py to start the bot. Make sure your Chrome is compatible and ChromeDriver is accessible.
