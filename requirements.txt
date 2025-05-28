@@ -1,5 +1,3 @@
 playwright
 requests
 aiohttp
-# Trigger browser install as part of pip install process
-pip-run==8.8.3
