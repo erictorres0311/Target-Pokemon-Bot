@@ -1,26 +1,19 @@
-import time, datetime
 from telegram_bot import send_telegram_message
 
 class TargetBot:
-    def __init__(self):
-        self.keywords = [
-            "Destined Rivals", "Prismatic Evolutions", "Scarlet & Violet: 151",
-            "Ultra-Premium Collection", "Super Premium Collection",
-            "Elite Trainer Box", "ETB", "Pokemon cards", "Booster Bundle",
-            "94300072"
-        ]
-        self.last_heartbeat = time.time()
+    def __init__(self, sku_list, max_quantity=4, check_interval=15, heartbeat_hours=3):
+        self.sku_list = sku_list
+        self.max_quantity = max_quantity
+        self.check_interval = check_interval
+        self.heartbeat_hours = heartbeat_hours
 
-    def run(self, check_interval=15, heartbeat_interval_hours=3):
-        print("Bot started...")
-        while True:
-            # Simulate check logic
-            print("Checking for products...")
-            # Add actual product checking and purchasing logic here
+    async def check_products(self):
+        print("🔍 Checking Target for products:", self.sku_list)
 
-            # Heartbeat logic
-            if time.time() - self.last_heartbeat >= heartbeat_interval_hours * 3600:
-                send_telegram_message("✅ Bot is still running and watching for drops.")
-                self.last_heartbeat = time.time()
+        for sku in self.sku_list:
+            url = f"https://www.target.com/p/-/{sku}"
+            print(f"🛒 Simulating check for {url}")
 
-            time.sleep(check_interval)
+            # Simulated example: if SKU ends with "2", fake "in stock"
+            if sku.endswith("2"):
+                await send_telegram_message(f"🔥 Target restock detected! Try buying now:\n{url}")

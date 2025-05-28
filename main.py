@@ -6,7 +6,7 @@ async def main():
     await send_telegram_message("✅ Target bot check-in: still watching for Pokémon drops...")
 
     bot = TargetBot(
-        item_ids=["94300072", "93954435", "93803457", "94300069",
+        sku_list=["94300072", "93954435", "93803457", "94300069",
             "94300067", "94300053", "94300073", "88897904",
             "94411686", "94300082"
         ],
