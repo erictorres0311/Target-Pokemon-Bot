@@ -16,9 +16,8 @@ async def main():
             "89462586",  # ETB Temporal Forces
             "89462592",  # ETB Twilight Masquerade
         ],
-        max_quantity=4,
-        check_interval=15,     # every 15 seconds
-        heartbeat_hours=3      # every 3 hours
+        check_interval=15,
+        heartbeat_hours=3
     )
     await bot.run()
 
