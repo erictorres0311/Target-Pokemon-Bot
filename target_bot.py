@@ -12,26 +12,29 @@ class TargetBot:
         self.last_heartbeat = time.time()
 
     async def check_items(self):
-        async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=True)
-            page = await browser.new_page()
+        try:
+            async with async_playwright() as p:
+                browser = await p.chromium.launch(headless=True)
+                page = await browser.new_page()
 
-            for sku in self.sku_list:
-                url = f"https://www.target.com/p/-/{sku}"
-                await page.goto(url)
-                await page.wait_for_timeout(2000)
+                for sku in self.sku_list:
+                    url = f"https://www.target.com/p/-/{sku}"
+                    try:
+                        await page.goto(url, timeout=30000)
+                        await page.wait_for_timeout(2000)
+                        button = await page.query_selector("button[data-test='orderPickupButton']")
 
-                try:
-                    button = await page.query_selector("button[data-test='orderPickupButton']")
-                    if button:
-                        await send_telegram_message(f"🔥 Target restock detected! Try buying now:\n{url}")
-                        for i in range(self.max_quantity):
-                            await page.click("button[data-test='orderPickupButton']")
-                            await page.wait_for_timeout(500)
-                except:
-                    pass  # Safe fail
-
-            await browser.close()
+                        if button:
+                            await send_telegram_message(f"🔥 Target restock detected! Try buying now:\n{url}")
+                            for i in range(self.max_quantity):
+                                await button.click()
+                                await page.wait_for_timeout(500)
+                    except Exception as e:
+                        print(f"❌ Error checking SKU {sku}: {e}")
+                await browser.close()
+        except Exception as e:
+            print(f"🚨 Playwright session error: {e}")
+            await send_telegram_message("⚠️ Target bot crashed while opening browser session.")
 
     async def run(self):
         while True:
