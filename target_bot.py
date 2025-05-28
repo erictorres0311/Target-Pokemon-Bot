@@ -1,33 +1,47 @@
 import asyncio
 import time
+from playwright.async_api import async_playwright
 from telegram_bot import send_telegram_message
 
 class TargetBot:
-    def __init__(self, sku_list, max_quantity=4, check_interval=15, heartbeat_hours=3):
-        self.sku_list = sku_list
-        self.max_quantity = max_quantity
+    def __init__(self, item_ids, check_interval=60, heartbeat_hours=3):
+        self.item_ids = item_ids
         self.check_interval = check_interval
         self.heartbeat_hours = heartbeat_hours
         self.last_heartbeat = time.time()
 
-    async def check_products(self):
-        print("🔍 Checking Target for products:", self.sku_list)
+    async def fetch_product_json(self, page, item_id):
+        url = f"https://www.target.com/p/-/{item_id}"
+        await page.goto(url, timeout=60000, wait_until='domcontentloaded')
+        content = await page.content()
+        if 'Product not available' in content or 'product not available' in content.lower():
+            return None
+        return url  # Assume available if page renders without product error
 
-        for sku in self.sku_list:
-            url = f"https://www.target.com/p/-/{sku}"
-            print(f"🛒 Simulating check for {url}")
+    async def check_items(self):
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True)
+            page = await browser.new_page()
 
-            # Simulate in-stock detection logic (mocked)
-            if sku.endswith("2"):
-                await send_telegram_message(f"🔥 Target restock detected! Try buying now:\n{url}")
+            for item_id in self.item_ids:
+                try:
+                    product_url = await self.fetch_product_json(page, item_id)
+                    if product_url:
+                        await send_telegram_message(f"🔥 Target restock detected! Try buying now:\n{product_url}")
+                        print(f"[{item_id}] Restock detected: {product_url}")
+                    else:
+                        print(f"[{item_id}] Not in stock.")
+                except Exception as e:
+                    print(f"[{item_id}] Error: {e}")
+
+            await browser.close()
 
     async def run(self):
-        print("🚀 Target bot started.")
         while True:
-            await self.check_products()
+            await self.check_items()
 
-            elapsed = time.time() - self.last_heartbeat
-            if elapsed > self.heartbeat_hours * 3600:
+            # Heartbeat message
+            if time.time() - self.last_heartbeat > self.heartbeat_hours * 3600:
                 await send_telegram_message("✅ Target bot check-in: still watching for Pokémon drops...")
                 self.last_heartbeat = time.time()
 
