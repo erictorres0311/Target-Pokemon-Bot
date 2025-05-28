@@ -6,7 +6,7 @@ async def main():
     await send_telegram_message("✅ Target bot check-in: still watching for Pokémon drops...")
 
     bot = TargetBot(
-        skus=[
+        skus_list=[
             "94300072",  # Prismatic Evolutions Super Premium Collection
             "89462588",  # ETB Scarlet & Violet Base
             "87933082",  # ETB Paldea Evolved
