@@ -6,7 +6,7 @@ async def main():
     await send_telegram_message("✅ Target bot check-in: still watching for Pokémon drops...")
 
     bot = TargetBot(
-        skus_list=[
+        sku_list=[  # ← CORRECT
             "94300072",  # Prismatic Evolutions Super Premium Collection
             "89462588",  # ETB Scarlet & Violet Base
             "87933082",  # ETB Paldea Evolved
@@ -16,9 +16,8 @@ async def main():
             "89462586",  # ETB Temporal Forces
             "89462592",  # ETB Twilight Masquerade
         ],
-        quantity_per_item=2,
-        check_interval=15,     # every 15 seconds
-        heartbeat_hours=3      # every 3 hours
+        check_interval=15,
+        heartbeat_hours=3
     )
     await bot.run()
 
