@@ -19,7 +19,7 @@ async def main():
         check_interval=15,
         heartbeat_hours=3
     )
-    # await bot.run()
+    await bot.run()
 
 if __name__ == "__main__":
     asyncio.run(main())
